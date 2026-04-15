@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORGE — Web Design Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a08;
+    --cream: #f5f0e8;
+    --rust: #c94f2a;
+    --amber: #e8a020;
+    --sand: #d4c4a8;
+    --charcoal: #1e1e1a;
+    --mid: #6b6558;
+    --glow: rgba(201,79,42,0.18);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+    font-size: 17px;
+  }
+
+  /* ── FUTURISTIC BACKGROUND CANVAS ── */
+  #bg-canvas {
+    position: fixed; inset: 0; z-index: 0;
+    pointer-events: none; opacity: 1;
+  }
+  nav, .hero, .content-grid, .stats-row,
+  .brief-section, footer, .footer-bottom,
+  .cursor, .cursor-ring {
+    position: relative; z-index: 2;
+  }
+
+  /* ── CUSTOM CURSOR ── */
+  .cursor {
+    position: fixed; width: 12px; height: 12px;
+    background: var(--rust); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: width .2s cubic-bezier(.23,1,.32,1), height .2s cubic-bezier(.23,1,.32,1), background .2s;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    position: fixed; width: 40px; height: 40px;
+    border: 1.5px solid rgba(201,79,42,.5); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: width .35s cubic-bezier(.23,1,.32,1), height .35s, opacity .3s;
+  }
+  body:has(a:hover,button:hover,.type-card:hover,.budget-card:hover,.service-row:hover) .cursor {
+    background: var(--amber); width: 22px; height: 22px;
+  }
+  body:has(a:hover,button:hover,.type-card:hover,.budget-card:hover,.service-row:hover) .cursor-ring {
+    width: 64px; height: 64px; opacity: .35;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content:''; position:fixed; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none; z-index:1000; opacity:.35;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 3rem;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(245,240,232,.06);
+    background: rgba(10,10,8,.75);
+  }
+  .nav-logo {
+    font-family:'Bebas Neue',sans-serif; font-size:1.7rem;
+    letter-spacing:.15em; color:var(--cream); text-decoration:none;
+    transition: text-shadow .3s;
+  }
+  .nav-logo:hover { text-shadow: 0 0 20px var(--rust); }
+  .nav-logo span { color:var(--rust); }
+  .nav-links { display:flex; gap:2.4rem; list-style:none; }
+  .nav-links a {
+    text-decoration:none; color:var(--sand); font-size:.85rem;
+    letter-spacing:.18em; text-transform:uppercase; transition:color .3s; position:relative;
+  }
+  .nav-links a::after {
+    content:''; position:absolute; bottom:-3px; left:0;
+    width:0; height:1px; background:var(--rust);
+    transition: width .4s cubic-bezier(.23,1,.32,1);
+  }
+  .nav-links a:hover { color:var(--cream); }
+  .nav-links a:hover::after { width:100%; }
+  .nav-cta {
+    background:var(--rust); color:var(--cream)!important;
+    padding:.55rem 1.4rem; border-radius:2px; font-weight:500!important;
+    transition: background .3s, box-shadow .3s, transform .2s !important;
+    box-shadow: 0 0 0 0 var(--glow);
+  }
+  .nav-cta::after { display:none!important; }
+  .nav-cta:hover {
+    background:var(--amber); color:var(--black)!important;
+    box-shadow: 0 0 24px 4px var(--glow);
+    transform: translateY(-1px);
+  }
+
+  /* ── HERO ── */
+  .hero { min-height: 32vh; display: grid; grid-template-columns: 1fr; padding-top: 5rem; }
+  .hero-left { display:flex; flex-direction:column; justify-content:center; padding: 2.5rem 3rem; }
+  .hero-eyebrow {
+    font-size:.8rem; letter-spacing:.3em; text-transform:uppercase;
+    color:var(--rust); margin-bottom:.75rem;
+    opacity:0; animation:fadeUp .7s ease forwards .2s;
+  }
+  .hero-title {
+    font-family:'Bebas Neue',sans-serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    line-height:1; margin-bottom:1rem;
+    opacity:0; animation:fadeUp .8s ease forwards .35s; white-space:nowrap;
+  }
+  .hero-title em { font-family:'DM Serif Display',serif; font-style:italic; color:var(--rust); }
+  .hero-sub {
+    font-size:1.1rem; line-height:1.7; color:var(--sand);
+    max-width:640px; margin-bottom:1.8rem;
+    opacity:0; animation:fadeUp .8s ease forwards .5s;
+  }
+  .hero-actions { display:flex; gap:1.4rem; align-items:center; opacity:0; animation:fadeUp .8s ease forwards .65s; }
+  .btn-primary {
+    background:var(--rust); color:var(--cream); padding:.85rem 2.2rem;
+    text-decoration:none; font-size:.9rem; letter-spacing:.14em;
+    text-transform:uppercase; font-weight:500;
+    transition: background .3s, transform .25s cubic-bezier(.23,1,.32,1), box-shadow .3s;
+    display:inline-block;
+    box-shadow: 0 0 0 0 var(--glow);
+  }
+  .btn-primary:hover {
+    background:var(--amber); color:var(--black);
+    transform:translateY(-3px);
+    box-shadow: 0 8px 28px var(--glow);
+  }
+  .btn-ghost {
+    color:var(--sand); text-decoration:none; font-size:.9rem;
+    letter-spacing:.14em; text-transform:uppercase;
+    border-bottom:1px solid var(--mid); padding-bottom:2px;
+    transition:color .3s,border-color .3s;
+  }
+  .btn-ghost:hover { color:var(--cream); border-color:var(--cream); }
+
+  /* ── CONTENT GRID ── */
+  .content-grid { display:grid; grid-template-columns:1fr; gap:2px; background:rgba(245,240,232,.05); }
+  .panel { background:var(--black); padding:3rem 3rem; }
+  .section-label { font-size:.75rem; letter-spacing:.28em; text-transform:uppercase; color:var(--rust); margin-bottom:1.4rem; }
+  .panel-title { font-family:'Bebas Neue',sans-serif; font-size:2.8rem; letter-spacing:.04em; line-height:1; margin-bottom:2rem; }
+
+  /* ── SERVICES ── */
+  .services-list { list-style:none; display:flex; flex-direction:row; gap:0; }
+  .service-row {
+    display:flex; flex-direction:column; align-items:flex-start; gap:.6rem;
+    padding:1.8rem 2rem; border-right:1px solid rgba(245,240,232,.07);
+    cursor:default; flex:1; position:relative; overflow:hidden;
+    transition: background .4s cubic-bezier(.23,1,.32,1);
+  }
+  .service-row::before {
+    content:''; position:absolute; bottom:0; left:0;
+    width:0; height:2px; background:var(--rust);
+    transition: width .5s cubic-bezier(.23,1,.32,1);
+  }
+  .service-row:last-child { border-right:none; }
+  .service-row:hover { background: rgba(201,79,42,.06); }
+  .service-row:hover::before { width:100%; }
+  .service-row:hover .service-name { color:var(--rust); }
+  .svc-num { font-family:'Bebas Neue',sans-serif; font-size:.9rem; color:var(--rust); opacity:.6; }
+  .service-name {
+    font-size:1.1rem; font-weight:500;
+    transition: color .3s, transform .3s cubic-bezier(.23,1,.32,1);
+    line-height:1.3;
+  }
+  .service-row:hover .service-name { transform: translateX(4px); }
+  .service-desc { font-size:.95rem; color:var(--mid); line-height:1.65; }
+
+  /* ── STATS ── */
+  .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; background:rgba(245,240,232,.05); }
+  .stat-cell {
+    background:var(--rust); padding:2rem 2rem; text-align:center;
+    transition: background .3s, transform .3s cubic-bezier(.23,1,.32,1);
+  }
+  .stat-cell:hover { background: #a83d1f; transform: scaleY(1.03); }
+  .stat-num { font-family:'Bebas Neue',sans-serif; font-size:3.2rem; line-height:1; color:var(--cream); }
+  .stat-lbl { font-size:.75rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(245,240,232,.75); margin-top:.4rem; }
+
+  /* ── SCROLL REVEAL — futuristic variants ── */
+  .reveal {
+    opacity:0; transform:translateY(40px) skewY(1deg);
+    transition: opacity .9s cubic-bezier(.23,1,.32,1), transform .9s cubic-bezier(.23,1,.32,1);
+  }
+  .reveal.visible { opacity:1; transform:translateY(0) skewY(0deg); }
+
+  .reveal-left {
+    opacity:0; transform:translateX(-50px);
+    transition: opacity .9s cubic-bezier(.23,1,.32,1), transform .9s cubic-bezier(.23,1,.32,1);
+  }
+  .reveal-left.visible { opacity:1; transform:translateX(0); }
+
+  .reveal-scale {
+    opacity:0; transform:scale(.94);
+    transition: opacity .8s cubic-bezier(.23,1,.32,1), transform .8s cubic-bezier(.23,1,.32,1);
+  }
+  .reveal-scale.visible { opacity:1; transform:scale(1); }
+
+  /* stagger children */
+  .stagger-children > *:nth-child(1) { transition-delay: 0s; }
+  .stagger-children > *:nth-child(2) { transition-delay: .1s; }
+  .stagger-children > *:nth-child(3) { transition-delay: .2s; }
+  .stagger-children > *:nth-child(4) { transition-delay: .3s; }
+
+  /* ── BRIEF FORM ── */
+  .brief-section {
+    display:grid; grid-template-columns:1fr 1.7fr; gap:0;
+    background:var(--charcoal);
+  }
+  .brief-left {
+    padding:4rem 3rem; border-right:1px solid rgba(245,240,232,.07);
+    display:flex; flex-direction:column; justify-content:center;
+  }
+  .brief-left h2 {
+    font-family:'DM Serif Display',serif;
+    font-size:clamp(2rem,3vw,3rem);
+    font-weight:400; line-height:1.2; margin-bottom:1.2rem;
+  }
+  .brief-left h2 em { color:var(--rust); font-style:italic; }
+  .brief-left p { color:var(--sand); font-size:1rem; line-height:1.75; margin-bottom:2.5rem; }
+  .brief-contact-info { display:flex; flex-direction:column; gap:.9rem; }
+  .bci-item { display:flex; flex-direction:column; gap:.15rem; }
+  .bci-label { font-size:.7rem; letter-spacing:.22em; text-transform:uppercase; color:var(--rust); }
+  .bci-item a { color:var(--sand); text-decoration:none; font-size:.95rem; transition:color .3s; }
+  .bci-item a:hover { color:var(--cream); }
+
+  .brief-right { padding:3rem; }
+  .brief-form { position:relative; min-height:380px; }
+
+  /* Steps */
+  .form-step { display:none; }
+  .form-step.active { display:block; animation:stepIn .5s cubic-bezier(.23,1,.32,1); }
+  .step-indicator { font-size:.75rem; letter-spacing:.22em; text-transform:uppercase; color:var(--rust); margin-bottom:1.8rem; }
+
+  /* Progress */
+  .form-progress { display:flex; gap:5px; margin-bottom:2.2rem; }
+  .progress-seg {
+    height:3px; flex:1; background:rgba(245,240,232,.1);
+    transition: background .5s cubic-bezier(.23,1,.32,1), box-shadow .5s;
+  }
+  .progress-seg.done {
+    background:var(--rust);
+    box-shadow: 0 0 8px var(--rust);
+  }
+
+  /* Fields */
+  .field-row { display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; margin-bottom:1.1rem; }
+  .field-group { display:flex; flex-direction:column; gap:.45rem; margin-bottom:0; }
+  .field-label-solo {
+    font-size:.8rem; letter-spacing:.1em; color:var(--sand);
+    text-transform:uppercase; display:block; margin-bottom:1rem;
+  }
+  label { font-size:.8rem; letter-spacing:.08em; color:var(--sand); text-transform:uppercase; }
+  input[type=text], input[type=email], input[type=tel], textarea, select {
+    background: rgba(245,240,232,.05);
+    border: 1px solid rgba(245,240,232,.12);
+    color:var(--cream); font-family:'DM Sans',sans-serif; font-size:.95rem;
+    padding:.8rem 1.1rem; outline:none; width:100%; border-radius:0;
+    appearance:none; -webkit-appearance:none;
+    transition: border-color .3s cubic-bezier(.23,1,.32,1), background .3s, box-shadow .3s;
+  }
+  input::placeholder, textarea::placeholder { color:var(--mid); }
+  input:focus, textarea:focus, select:focus {
+    border-color:var(--rust);
+    background:rgba(201,79,42,.05);
+    box-shadow: 0 0 16px rgba(201,79,42,.15);
+  }
+  textarea { resize:vertical; min-height:90px; }
+  select { cursor:pointer; }
+  select option { background:var(--charcoal); color:var(--cream); }
+
+  /* Type grid */
+  .type-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.6rem; margin-bottom:1.6rem; }
+  .type-card {
+    border:1px solid rgba(245,240,232,.1); padding:1.1rem .9rem;
+    display:flex; flex-direction:column; align-items:center; gap:.5rem;
+    cursor:pointer; text-align:center; position:relative; overflow:hidden;
+    transition: border-color .35s cubic-bezier(.23,1,.32,1), background .35s, transform .3s cubic-bezier(.23,1,.32,1), box-shadow .35s;
+  }
+  .type-card::before {
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(135deg, rgba(201,79,42,.1) 0%, transparent 70%);
+    opacity:0; transition:opacity .35s;
+  }
+  .type-card:hover { border-color:rgba(201,79,42,.6); transform:translateY(-2px); box-shadow:0 6px 20px rgba(201,79,42,.12); }
+  .type-card:hover::before { opacity:1; }
+  .type-card.selected {
+    border-color:var(--rust); background:rgba(201,79,42,.1);
+    box-shadow:0 0 20px rgba(201,79,42,.2);
+    transform:translateY(-2px);
+  }
+  .type-card.selected::before { opacity:1; }
+  .type-icon { font-size:1.4rem; color:var(--rust); transition:transform .3s cubic-bezier(.23,1,.32,1); }
+  .type-card:hover .type-icon { transform: scale(1.2) rotate(-5deg); }
+  .type-name { font-size:.8rem; color:var(--sand); line-height:1.3; }
+
+  /* Budget grid */
+  .budget-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.6rem; }
+  .budget-card {
+    border:1px solid rgba(245,240,232,.1); padding:.95rem 1rem;
+    text-align:center; cursor:pointer; font-size:.9rem; color:var(--sand);
+    transition: border-color .35s cubic-bezier(.23,1,.32,1), background .35s, transform .3s, box-shadow .35s;
+    position:relative; overflow:hidden;
+  }
+  .budget-card::after {
+    content:''; position:absolute; bottom:0; left:50%; width:0; height:2px;
+    background:var(--rust); transform:translateX(-50%);
+    transition:width .4s cubic-bezier(.23,1,.32,1);
+  }
+  .budget-card:hover { border-color:rgba(201,79,42,.5); background:rgba(201,79,42,.05); transform:translateY(-1px); }
+  .budget-card:hover::after { width:80%; }
+  .budget-card.selected {
+    border-color:var(--rust); background:rgba(201,79,42,.1);
+    color:var(--cream); box-shadow:0 0 18px rgba(201,79,42,.18);
+  }
+  .budget-card.selected::after { width:80%; }
+
+  /* Checkboxes */
+  .check-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.5rem .9rem; margin-top:.4rem; }
+  .check-opt {
+    display:flex; align-items:center; gap:.55rem; font-size:.88rem;
+    color:var(--sand); cursor:pointer; text-transform:none; letter-spacing:0; line-height:1.3;
+    transition:color .25s;
+  }
+  .check-opt input[type=checkbox] { accent-color:var(--rust); width:14px; height:14px; cursor:pointer; flex-shrink:0; }
+  .check-opt:has(input:checked) { color:var(--cream); }
+
+  /* Radio */
+  .radio-row { display:flex; gap:1.6rem; flex-wrap:wrap; margin-top:.5rem; }
+  .radio-opt {
+    display:flex; align-items:center; gap:.5rem; font-size:.9rem;
+    color:var(--sand); cursor:pointer; text-transform:none; letter-spacing:0;
+    transition:color .25s;
+  }
+  .radio-opt:has(input:checked) { color:var(--cream); }
+  .radio-opt input[type=radio] { accent-color:var(--rust); width:14px; height:14px; cursor:pointer; }
+
+  /* Required */
+  .req { color:var(--rust); font-size:.75rem; }
+
+  /* Nav buttons */
+  .form-nav { display:flex; justify-content:flex-end; gap:1rem; margin-top:2rem; align-items:center; }
+  .btn-next, .btn-submit {
+    background:var(--rust); color:var(--cream); border:none; cursor:pointer;
+    padding:.85rem 2.2rem; font-family:'DM Sans',sans-serif; font-size:.88rem;
+    letter-spacing:.15em; text-transform:uppercase; font-weight:500;
+    transition: background .3s, transform .3s cubic-bezier(.23,1,.32,1), box-shadow .3s;
+  }
+  .btn-next:hover, .btn-submit:hover {
+    background:var(--amber); color:var(--black);
+    transform:translateY(-2px); box-shadow:0 8px 24px var(--glow);
+  }
+  .btn-back {
+    background:transparent; color:var(--mid); border:1px solid rgba(245,240,232,.12);
+    cursor:pointer; padding:.85rem 1.6rem; font-family:'DM Sans',sans-serif;
+    font-size:.88rem; letter-spacing:.15em; text-transform:uppercase;
+    transition:color .3s, border-color .3s;
+  }
+  .btn-back:hover { color:var(--cream); border-color:rgba(245,240,232,.35); }
+
+  /* Success */
+  .form-success { display:none; text-align:center; padding:4rem 2rem; }
+  .form-success.visible { display:block; animation:stepIn .6s cubic-bezier(.23,1,.32,1); }
+  .success-icon {
+    width:4rem; height:4rem; background:var(--rust); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.6rem; margin:0 auto 1.5rem;
+    box-shadow:0 0 30px rgba(201,79,42,.4);
+    animation:pulse 2s ease-in-out infinite;
+  }
+  .form-success h3 { font-family:'DM Serif Display',serif; font-size:2rem; font-weight:400; margin-bottom:.8rem; }
+  .form-success p { color:var(--sand); font-size:1rem; line-height:1.75; max-width:360px; margin:0 auto; }
+
+  /* ── FOOTER ── */
+  footer { padding:2.5rem 3rem; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:3rem; border-top:1px solid rgba(245,240,232,.07); }
+  .footer-brand .nav-logo { display:block; margin-bottom:1rem; }
+  .footer-brand p { color:var(--mid); font-size:.9rem; line-height:1.7; max-width:240px; }
+  .footer-col h4 { font-size:.72rem; letter-spacing:.22em; text-transform:uppercase; color:var(--sand); margin-bottom:1.1rem; }
+  .footer-col ul { list-style:none; }
+  .footer-col ul li { margin-bottom:.7rem; }
+  .footer-col ul a { text-decoration:none; color:var(--mid); font-size:.9rem; transition:color .3s; }
+  .footer-col ul a:hover { color:var(--cream); }
+  .footer-bottom {
+    padding:1.3rem 3rem; border-top:1px solid rgba(245,240,232,.05);
+    display:flex; justify-content:space-between; color:var(--mid); font-size:.8rem; letter-spacing:.05em;
+  }
+
+  /* ── KEYFRAMES ── */
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(28px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes stepIn {
+    from { opacity:0; transform:translateX(20px) scale(.98); }
+    to   { opacity:1; transform:translateX(0) scale(1); }
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow:0 0 20px rgba(201,79,42,.3); }
+    50%      { box-shadow:0 0 40px rgba(201,79,42,.65); }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">FOR<span>GE</span></a>
+  <ul class="nav-links">
+    <li><a href="#main">Services</a></li>
+    <li><a href="#contact" class="nav-cta">Start a Project</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Web Design &amp; Development Studio</div>
+    <h1 class="hero-title">WE BUILD <em>SITES</em> THAT SELL</h1>
+    <p class="hero-sub">We design and build websites that work hard for your business — turning visitors into paying customers, every single day.</p>
+    <div class="hero-actions">
+      <a href="#main" class="btn-primary">Our Services</a>
+      <a href="#contact" class="btn-ghost">Get a Quote →</a>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<div class="content-grid" id="main">
+  <div class="panel reveal">
+    <div class="section-label">What We Do</div>
+    <div class="panel-title">SERVICES</div>
+    <ul class="services-list stagger-children">
+      <li class="service-row reveal-scale">
+        <span class="svc-num">01</span>
+        <div>
+          <div class="service-name">Web Design</div>
+          <div class="service-desc">We design beautiful websites built around your brand. Every page is crafted to look great and guide visitors towards taking action.</div>
+        </div>
+      </li>
+      <li class="service-row reveal-scale">
+        <span class="svc-num">02</span>
+        <div>
+          <div class="service-name">Brand &amp; Strategy</div>
+          <div class="service-desc">From your logo to your colour palette and messaging, we help you build a brand that people remember and trust.</div>
+        </div>
+      </li>
+      <li class="service-row reveal-scale">
+        <span class="svc-num">03</span>
+        <div>
+          <div class="service-name">Web Performance</div>
+          <div class="service-desc">We make your website faster and more reliable so it ranks better on Google and keeps visitors from leaving before they even start.</div>
+        </div>
+      </li>
+      <li class="service-row reveal-scale">
+        <span class="svc-num">04</span>
+        <div>
+          <div class="service-name">Web Maintenance</div>
+          <div class="service-desc">We handle all the technical upkeep — updates, security, backups — so your site stays safe, fresh, and running smoothly.</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row stagger-children">
+  <div class="stat-cell reveal"><div class="stat-num">56+</div><div class="stat-lbl">Projects Delivered</div></div>
+  <div class="stat-cell reveal"><div class="stat-num">98%</div><div class="stat-lbl">Client Satisfaction</div></div>
+  <div class="stat-cell reveal"><div class="stat-num">8yrs</div><div class="stat-lbl">In Business</div></div>
+  <div class="stat-cell reveal"><div class="stat-num">3×</div><div class="stat-lbl">Avg. Traffic Growth</div></div>
+</div>
+
+<!-- BRIEF FORM -->
+<section class="brief-section" id="contact">
+  <div class="brief-left reveal-left">
+    <div class="section-label">Start a Project</div>
+    <h2>Tell us about your <em>website</em></h2>
+    <p>Fill in the brief below and we'll send you a custom proposal within 48 hours. No pressure, no jargon — just a straight answer.</p>
+    <div class="brief-contact-info">
+      <div class="bci-item"><span class="bci-label">Email</span><a href="mailto:hello@forgestudio.com">hello@forgestudio.com</a></div>
+      <div class="bci-item"><span class="bci-label">Phone</span><a href="tel:+27555234567">+27 555 234 567</a></div>
+    </div>
+  </div>
+  <div class="brief-right reveal">
+    <div class="brief-form" id="briefForm">
+      <div class="form-progress" id="formProgress">
+        <div class="progress-seg done"></div>
+        <div class="progress-seg"></div>
+        <div class="progress-seg"></div>
+        <div class="progress-seg"></div>
+        <div class="progress-seg"></div>
+      </div>
+
+      <!-- Step 1: About You -->
+      <div class="form-step active" data-step="1">
+        <div class="step-indicator">Step 1 of 5 &nbsp;—&nbsp; About You</div>
+        <div class="field-row">
+          <div class="field-group">
+            <label>Your Name <span class="req">*</span></label>
+            <input type="text" id="f-name" placeholder="Jane Smith" />
+          </div>
+          <div class="field-group">
+            <label>Job Title</label>
+            <input type="text" id="f-role" placeholder="e.g. Founder, Marketing Manager" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label>Company / Brand <span class="req">*</span></label>
+            <input type="text" id="f-company" placeholder="Acme Inc." />
+          </div>
+          <div class="field-group">
+            <label>Industry</label>
+            <select id="f-industry">
+              <option value="" disabled selected>Select industry</option>
+              <option>Retail / E-commerce</option>
+              <option>Professional Services</option>
+              <option>Health &amp; Wellness</option>
+              <option>Technology / SaaS</option>
+              <option>Hospitality &amp; Food</option>
+              <option>Real Estate</option>
+              <option>Creative / Arts</option>
+              <option>Non-profit</option>
+              <option>Education</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label>Email Address <span class="req">*</span></label>
+            <input type="email" id="f-email" placeholder="jane@acme.com" />
+          </div>
+          <div class="field-group">
+            <label>Phone (optional)</label>
+            <input type="tel" id="f-phone" placeholder="+27 555 000 000" />
+          </div>
+        </div>
+        <div class="field-group" style="margin-bottom:0">
+          <label>Your Current Website (if you have one)</label>
+          <input type="text" id="f-current-site" placeholder="https://yoursite.com" />
+        </div>
+        <div class="form-nav">
+          <button class="btn-next" onclick="nextStep(1)">Next →</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Website Type & Goals -->
+      <div class="form-step" data-step="2">
+        <div class="step-indicator">Step 2 of 5 &nbsp;—&nbsp; Type &amp; Goals</div>
+        <label class="field-label-solo">What kind of website do you need?</label>
+        <div class="type-grid">
+          <div class="type-card" onclick="selectType(this,'type')"><span class="type-icon">◎</span><span class="type-name">Business / Corporate</span></div>
+          <div class="type-card" onclick="selectType(this,'type')"><span class="type-icon">◈</span><span class="type-name">E-commerce Store</span></div>
+          <div class="type-card" onclick="selectType(this,'type')"><span class="type-icon">◇</span><span class="type-name">Portfolio / Creative</span></div>
+          <div class="type-card" onclick="selectType(this,'type')"><span class="type-icon">◉</span><span class="type-name">Landing Page</span></div>
+          <div class="type-card" onclick="selectType(this,'type')"><span class="type-icon">◑</span><span class="type-name">Blog / Media</span></div>
+          <div class="type-card" onclick="selectType(this,'type')"><span class="type-icon">◐</span><span class="type-name">Web App / SaaS</span></div>
+          <div class="type-card" onclick="selectType(this,'type')"><span class="type-icon">◍</span><span class="type-name">Non-profit / NGO</span></div>
+          <div class="type-card" onclick="selectType(this,'type')"><span class="type-icon">○</span><span class="type-name">Something Else</span></div>
+        </div>
+        <label class="field-label-solo" style="margin-top:1.6rem">What should this website achieve? <span style="font-size:.72rem;opacity:.6;text-transform:none;letter-spacing:0">(pick all that apply)</span></label>
+        <div class="check-grid">
+          <label class="check-opt"><input type="checkbox" name="goal" value="leads" /><span>Bring in more leads</span></label>
+          <label class="check-opt"><input type="checkbox" name="goal" value="sales" /><span>Sell online</span></label>
+          <label class="check-opt"><input type="checkbox" name="goal" value="brand" /><span>Grow brand awareness</span></label>
+          <label class="check-opt"><input type="checkbox" name="goal" value="credibility" /><span>Build trust &amp; credibility</span></label>
+          <label class="check-opt"><input type="checkbox" name="goal" value="info" /><span>Share useful content</span></label>
+          <label class="check-opt"><input type="checkbox" name="goal" value="community" /><span>Build a community</span></label>
+        </div>
+        <div class="form-nav">
+          <button class="btn-back" onclick="prevStep(2)">← Back</button>
+          <button class="btn-next" onclick="nextStep(2)">Next →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Project Details -->
+      <div class="form-step" data-step="3">
+        <div class="step-indicator">Step 3 of 5 &nbsp;—&nbsp; Project Details</div>
+        <div class="field-group" style="margin-bottom:1.2rem">
+          <label>Tell us about your business and what you want from the site <span class="req">*</span></label>
+          <textarea id="f-desc" rows="3" placeholder="What do you do? Who are your customers? What should people do when they visit your site?"></textarea>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label>How many pages do you need?</label>
+            <select id="f-pages">
+              <option value="" disabled selected>Select range</option>
+              <option>1–3 pages</option>
+              <option>4–8 pages</option>
+              <option>9–20 pages</option>
+              <option>20–50 pages</option>
+              <option>50+ pages</option>
+              <option>Not sure yet</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Which platform do you prefer?</label>
+            <select id="f-platform">
+              <option value="" disabled selected>No preference</option>
+              <option>WordPress</option>
+              <option>Shopify</option>
+              <option>Webflow</option>
+              <option>Next.js / React</option>
+              <option>Custom build</option>
+              <option>Not sure — advise me</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-group" style="margin-bottom:1.2rem">
+          <label>Which features do you need? <span style="font-size:.72rem;opacity:.6;text-transform:none;letter-spacing:0">(pick all that apply)</span></label>
+          <div class="check-grid">
+            <label class="check-opt"><input type="checkbox" name="feat" value="cms" /><span>Blog / News section</span></label>
+            <label class="check-opt"><input type="checkbox" name="feat" value="ecom" /><span>Online store</span></label>
+            <label class="check-opt"><input type="checkbox" name="feat" value="booking" /><span>Booking or scheduling</span></label>
+            <label class="check-opt"><input type="checkbox" name="feat" value="forms" /><span>Contact forms</span></label>
+            <label class="check-opt"><input type="checkbox" name="feat" value="login" /><span>Member login area</span></label>
+            <label class="check-opt"><input type="checkbox" name="feat" value="map" /><span>Maps or locations</span></label>
+            <label class="check-opt"><input type="checkbox" name="feat" value="video" /><span>Video or media gallery</span></label>
+            <label class="check-opt"><input type="checkbox" name="feat" value="multilang" /><span>Multiple languages</span></label>
+            <label class="check-opt"><input type="checkbox" name="feat" value="api" /><span>Third-party integrations</span></label>
+            <label class="check-opt"><input type="checkbox" name="feat" value="chat" /><span>Live chat</span></label>
+            <label class="check-opt"><input type="checkbox" name="feat" value="seo" /><span>SEO setup</span></label>
+            <label class="check-opt"><input type="checkbox" name="feat" value="analytics" /><span>Analytics &amp; tracking</span></label>
+          </div>
+        </div>
+        <div class="field-group" style="margin-bottom:0">
+          <label>Who is your target audience?</label>
+          <input type="text" id="f-audience" placeholder="e.g. Small business owners in South Africa, aged 30–50" />
+        </div>
+        <div class="form-nav">
+          <button class="btn-back" onclick="prevStep(3)">← Back</button>
+          <button class="btn-next" onclick="nextStep(3)">Next →</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Budget & Timeline -->
+      <div class="form-step" data-step="4">
+        <div class="step-indicator">Step 4 of 5 &nbsp;—&nbsp; Budget &amp; Timeline</div>
+        <div class="field-group" style="margin-bottom:1.5rem">
+          <label>What is your approximate budget?</label>
+          <div class="budget-grid">
+            <div class="budget-card" onclick="selectType(this,'budget')"><span>Under R1,500</span></div>
+            <div class="budget-card" onclick="selectType(this,'budget')"><span>R1,500 – R2,500</span></div>
+            <div class="budget-card" onclick="selectType(this,'budget')"><span>R2,500 – R3,500</span></div>
+            <div class="budget-card" onclick="selectType(this,'budget')"><span>R3,500 – R4,500</span></div>
+            <div class="budget-card" onclick="selectType(this,'budget')"><span>R4,500 – R5,500</span></div>
+            <div class="budget-card" onclick="selectType(this,'budget')"><span>Not Sure</span></div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label>When do you want to launch?</label>
+            <input type="text" id="f-timeline" placeholder="e.g. End of Q2, within 6 weeks" />
+          </div>
+          <div class="field-group">
+            <label>How urgent is this project?</label>
+            <select id="f-urgency">
+              <option value="" disabled selected>Select one</option>
+              <option>Very urgent — ASAP</option>
+              <option>Within 1 month</option>
+              <option>1–3 months</option>
+              <option>3–6 months</option>
+              <option>No rush — just planning</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-group" style="margin-bottom:1.2rem">
+          <label>Do you already have a logo and branding?</label>
+          <div class="radio-row">
+            <label class="radio-opt"><input type="radio" name="branding" value="yes" /> Yes, I have everything</label>
+            <label class="radio-opt"><input type="radio" name="branding" value="partial" /> I have some things</label>
+            <label class="radio-opt"><input type="radio" name="branding" value="no" /> Starting from nothing</label>
+          </div>
+        </div>
+        <div class="field-group" style="margin-bottom:0">
+          <label>Will you need help maintaining the site after launch?</label>
+          <div class="radio-row">
+            <label class="radio-opt"><input type="radio" name="maintenance" value="yes" /> Yes, monthly support please</label>
+            <label class="radio-opt"><input type="radio" name="maintenance" value="maybe" /> Maybe</label>
+            <label class="radio-opt"><input type="radio" name="maintenance" value="no" /> No, just the build</label>
+          </div>
+        </div>
+        <div class="form-nav">
+          <button class="btn-back" onclick="prevStep(4)">← Back</button>
+          <button class="btn-next" onclick="nextStep(4)">Next →</button>
+        </div>
+      </div>
+
+      <!-- Step 5: Style & Final -->
+      <div class="form-step" data-step="5">
+        <div class="step-indicator">Step 5 of 5 &nbsp;—&nbsp; Style &amp; Final Details</div>
+        <div class="field-group" style="margin-bottom:1.2rem">
+          <label>What look and feel do you want? <span style="font-size:.72rem;opacity:.6;text-transform:none;letter-spacing:0">(pick all that apply)</span></label>
+          <div class="check-grid">
+            <label class="check-opt"><input type="checkbox" name="style" value="minimal" /><span>Clean &amp; minimal</span></label>
+            <label class="check-opt"><input type="checkbox" name="style" value="bold" /><span>Bold &amp; eye-catching</span></label>
+            <label class="check-opt"><input type="checkbox" name="style" value="luxury" /><span>Luxury / high-end</span></label>
+            <label class="check-opt"><input type="checkbox" name="style" value="playful" /><span>Fun &amp; playful</span></label>
+            <label class="check-opt"><input type="checkbox" name="style" value="editorial" /><span>Magazine / editorial</span></label>
+            <label class="check-opt"><input type="checkbox" name="style" value="corporate" /><span>Corporate / formal</span></label>
+            <label class="check-opt"><input type="checkbox" name="style" value="dark" /><span>Dark &amp; moody</span></label>
+            <label class="check-opt"><input type="checkbox" name="style" value="earthy" /><span>Earthy &amp; natural</span></label>
+          </div>
+        </div>
+        <div class="field-group" style="margin-bottom:1.2rem">
+          <label>Share links to websites you like the look of</label>
+          <input type="text" id="f-inspo" placeholder="https://example.com, https://another.com" />
+        </div>
+        <div class="field-group" style="margin-bottom:1.2rem">
+          <label>Describe your brand in a few words or colours</label>
+          <input type="text" id="f-colours" placeholder="e.g. Navy blue, professional, warm, modern" />
+        </div>
+        <div class="field-group" style="margin-bottom:1.2rem">
+          <label>Anything else we should know?</label>
+          <textarea id="f-extra" rows="2" placeholder="Special requirements, competitor sites, accessibility needs — anything goes."></textarea>
+        </div>
+        <div class="field-group" style="margin-bottom:0">
+          <label>How did you find us?</label>
+          <select id="f-source">
+            <option value="" disabled selected>Select one</option>
+            <option>Google Search</option>
+            <option>Word of mouth / referral</option>
+            <option>Social media</option>
+            <option>Previous client</option>
+            <option>Online directory</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-nav">
+          <button class="btn-back" onclick="prevStep(5)">← Back</button>
+          <button class="btn-submit" onclick="submitForm()">Send Brief →</button>
+        </div>
+      </div>
+
+      <!-- Success -->
+      <div class="form-success" id="formSuccess">
+        <div class="success-icon">✓</div>
+        <h3>Brief received!</h3>
+        <p>Thanks for reaching out. We'll review your project and get back to you within 48 hours with a tailored proposal.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <a href="#" class="nav-logo">FOR<span>GE</span></a>
+    <p>A web design studio building digital experiences that convert. Based in South Africa, working globally.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Services</h4>
+    <ul>
+      <li><a href="#">Web Design</a></li>
+      <li><a href="#">Brand &amp; Strategy</a></li>
+      <li><a href="#">Web Performance</a></li>
+      <li><a href="#">Web Maintenance</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Studio</h4>
+    <ul>
+      <li><a href="#">About Us</a></li>
+      <li><a href="#">Our Work</a></li>
+      <li><a href="#">Careers</a></li>
+      <li><a href="#">Blog</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Contact</h4>
+    <ul>
+      <li><a href="#">hello@forgestudio.com</a></li>
+      <li><a href="#">+27 555 234 567</a></li>
+      <li><a href="#">Instagram</a></li>
+      <li><a href="#">LinkedIn</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <span>© 2026 Forge Studio. All rights reserved.</span>
+  <span>Privacy Policy · Terms of Service</span>
+</div>
+
+<script>
+  // ── FUTURISTIC BACKGROUND ──
+  (function() {
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, mouse = { x: 0, y: 0 };
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+    // ── Grid lines ──
+    const GRID = 60;
+    let gridOffset = 0;
+
+    // ── Particles ──
+    const PARTICLE_COUNT = 90;
+    const particles = Array.from({ length: PARTICLE_COUNT }, () => createParticle());
+
+    function createParticle(reset) {
+      return {
+        x: reset ? Math.random() * W : Math.random() * W,
+        y: reset ? -10 : Math.random() * H,
+        vy: 0.18 + Math.random() * 0.45,
+        vx: (Math.random() - 0.5) * 0.2,
+        size: 0.8 + Math.random() * 1.8,
+        opacity: 0.15 + Math.random() * 0.5,
+        color: Math.random() > 0.65 ? '#c94f2a' : '#d4c4a8',
+        pulse: Math.random() * Math.PI * 2,
+        pulseSpeed: 0.012 + Math.random() * 0.018,
+      };
+    }
+
+    // ── Orbs (large glowing blobs) ──
+    const orbs = [
+      { x: W * 0.15, y: H * 0.25, r: 260, color: 'rgba(201,79,42,', phase: 0, speed: 0.0007 },
+      { x: W * 0.8,  y: H * 0.6,  r: 200, color: 'rgba(201,79,42,', phase: 1.8, speed: 0.0009 },
+      { x: W * 0.5,  y: H * 0.9,  r: 180, color: 'rgba(232,160,32,', phase: 3.2, speed: 0.0006 },
+    ];
+
+    // ── Data-stream lines ──
+    const STREAMS = 18;
+    const streams = Array.from({ length: STREAMS }, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      len: 40 + Math.random() * 100,
+      vy: 1.2 + Math.random() * 2.5,
+      opacity: 0.06 + Math.random() * 0.14,
+      width: 0.5 + Math.random() * 1,
+    }));
+
+    // ── Hex grid (sparse) ──
+    function drawHex(x, y, r, alpha) {
+      ctx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const angle = (Math.PI / 3) * i - Math.PI / 6;
+        const px = x + r * Math.cos(angle);
+        const py = y + r * Math.sin(angle);
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = `rgba(201,79,42,${alpha})`;
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+
+    let t = 0;
+
+    function draw() {
+      t++;
+      ctx.clearRect(0, 0, W, H);
+
+      // ── 1. Deep background gradient ──
+      const bg = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W, H) * 0.85);
+      bg.addColorStop(0, 'rgba(18,14,10,0.0)');
+      bg.addColorStop(1, 'rgba(5,4,3,0.0)');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, W, H);
+
+      // ── 2. Orbs ──
+      orbs.forEach(o => {
+        o.phase += o.speed;
+        const ox = o.x + Math.sin(o.phase) * 80;
+        const oy = o.y + Math.cos(o.phase * 0.7) * 50;
+        const grad = ctx.createRadialGradient(ox, oy, 0, ox, oy, o.r);
+        grad.addColorStop(0, o.color + '0.07)');
+        grad.addColorStop(0.5, o.color + '0.03)');
+        grad.addColorStop(1, o.color + '0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+      });
+
+      // ── 3. Perspective grid (scrolling) ──
+      gridOffset = (gridOffset + 0.4) % GRID;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(201,79,42,0.06)';
+      ctx.lineWidth = 0.5;
+      // Horizontal lines
+      for (let y = -GRID + gridOffset; y < H + GRID; y += GRID) {
+        const depth = y / H;
+        ctx.globalAlpha = depth * 0.4;
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      // Vertical lines with perspective vanishing point
+      const vx = W / 2 + (mouse.x - W / 2) * 0.04;
+      for (let i = -12; i <= 12; i++) {
+        const x0 = vx + i * (W / 12);
+        ctx.strokeStyle = `rgba(201,79,42,${0.03 + Math.abs(i) * 0.003})`;
+        ctx.beginPath();
+        ctx.moveTo(vx, 0);
+        ctx.lineTo(x0, H);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // ── 4. Sparse hex cells ──
+      const hexR = 38;
+      const hexCols = Math.ceil(W / (hexR * 1.75)) + 1;
+      const hexRows = Math.ceil(H / (hexR * 1.55)) + 1;
+      for (let row = 0; row < hexRows; row++) {
+        for (let col = 0; col < hexCols; col++) {
+          const hx = col * hexR * 1.75 + (row % 2) * hexR * 0.875;
+          const hy = row * hexR * 1.52;
+          const dist = Math.hypot(hx - mouse.x, hy - mouse.y);
+          const proximity = Math.max(0, 1 - dist / 320);
+          const alpha = 0.025 + proximity * 0.08 + Math.sin(t * 0.015 + row * 0.7 + col * 0.5) * 0.012;
+          if (alpha > 0.015) drawHex(hx, hy, hexR * 0.48, alpha);
+        }
+      }
+
+      // ── 5. Data streams ──
+      streams.forEach(s => {
+        s.y += s.vy;
+        if (s.y - s.len > H) { s.y = -s.len; s.x = Math.random() * W; }
+        const grad = ctx.createLinearGradient(s.x, s.y - s.len, s.x, s.y);
+        grad.addColorStop(0, `rgba(201,79,42,0)`);
+        grad.addColorStop(1, `rgba(201,79,42,${s.opacity})`);
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y - s.len);
+        ctx.lineTo(s.x, s.y);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = s.width;
+        ctx.stroke();
+      });
+
+      // ── 6. Particles ──
+      particles.forEach((p, i) => {
+        p.x += p.vx + (mouse.x - W / 2) * 0.00008;
+        p.y += p.vy;
+        p.pulse += p.pulseSpeed;
+        if (p.y > H + 10) {
+          particles[i] = createParticle(true);
+          particles[i].x = Math.random() * W;
+        }
+        const alpha = p.opacity * (0.7 + 0.3 * Math.sin(p.pulse));
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = p.color === '#c94f2a'
+          ? `rgba(201,79,42,${alpha})`
+          : `rgba(212,196,168,${alpha * 0.5})`;
+        ctx.fill();
+      });
+
+      // ── 7. Scan line ──
+      const scanY = ((t * 0.6) % (H + 60)) - 30;
+      const scanGrad = ctx.createLinearGradient(0, scanY - 2, 0, scanY + 2);
+      scanGrad.addColorStop(0, 'rgba(201,79,42,0)');
+      scanGrad.addColorStop(0.5, 'rgba(201,79,42,0.06)');
+      scanGrad.addColorStop(1, 'rgba(201,79,42,0)');
+      ctx.fillStyle = scanGrad;
+      ctx.fillRect(0, scanY - 2, W, 4);
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  // ── CURSOR ──
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx=0, my=0, rx=0, ry=0;
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+  (function tick() {
+    cursor.style.left = mx+'px'; cursor.style.top = my+'px';
+    rx += (mx-rx) * .11; ry += (my-ry) * .11;
+    ring.style.left = rx+'px'; ring.style.top = ry+'px';
+    requestAnimationFrame(tick);
+  })();
+
+  // ── SCROLL REVEAL ──
+  const allReveal = document.querySelectorAll('.reveal, .reveal-left, .reveal-scale');
+  const revealObs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        // stagger siblings slightly
+        const siblings = [...e.target.parentElement.children].filter(c =>
+          c.classList.contains('reveal') || c.classList.contains('reveal-left') || c.classList.contains('reveal-scale')
+        );
+        const idx = siblings.indexOf(e.target);
+        e.target.style.transitionDelay = (idx * 0.08) + 's';
+        e.target.classList.add('visible');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  allReveal.forEach(el => revealObs.observe(el));
+
+  // ── FORM ──
+  function showStep(n) {
+    const steps = document.querySelectorAll('.form-step');
+    steps.forEach(s => s.classList.remove('active'));
+    const next = document.querySelector('.form-step[data-step="'+n+'"]');
+    if (next) next.classList.add('active');
+    document.querySelectorAll('.progress-seg').forEach((seg, i) => {
+      seg.classList.toggle('done', i < n);
+    });
+  }
+  function nextStep(current) { showStep(current + 1); }
+  function prevStep(current) { showStep(current - 1); }
+
+  function selectType(el, group) {
+    el.closest('.type-grid, .budget-grid')
+      .querySelectorAll('.type-card, .budget-card')
+      .forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function submitForm() {
+    document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('formProgress').style.display = 'none';
+    document.getElementById('formSuccess').classList.add('visible');
+  }
+</script>
+</body>
+</html>
